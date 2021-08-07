@@ -22,11 +22,11 @@ const CrearCuenta = () => {
   //Errores de registro que pueda devolver firebase
   const [error, guardarError] = useState(false)
 
-  const { valores, errores, handleSubmit, handleChange, handleBlur } = useValidacion(STATE_INICIAL, validarCrearCuenta, CrearCuenta)
+  const { valores, errores, handleSubmit, handleChange, handleBlur } = useValidacion(STATE_INICIAL, validarCrearCuenta, crearCuenta)
 
   const { nombre, email, password } = valores
 
-  async function CrearCuenta() {
+  async function crearCuenta() {
     try {
       await firebase.registrar(nombre, email, password) //Registro con firebase
 
