@@ -104,6 +104,8 @@ const DetallesProducto = ({producto}) => {
 
                     <Comentarios>
                         <div>
+
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img src='/static/img/comentario.png' alt='imgProdList' />
                             <p>{comentarios.length} Comentarios</p>
                         </div>
