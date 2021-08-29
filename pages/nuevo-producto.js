@@ -4,6 +4,7 @@ import Router, { useRouter } from 'next/router'
 import FileUploader from 'react-firebase-file-uploader'
 import Layout from '../components/layout/Layout'
 import { Formulario, Campo, InputSubmit, Error } from '../components/ui/Formulario'
+import Error404 from '../components/layout/404'
 
 //Firebase
 import { FirebaseContext } from '../firebase'
@@ -56,7 +57,12 @@ const NuevoProducto = () => {
       descripcion,
       votos: 0,
       comentarios: [],
-      creado: Date.now()
+      creado: Date.now(),
+      creador: {
+        id: usuario.uid,
+        nombre: usuario.displayName
+      },
+      haVotado: []
     }
 
     //Insertarlo en la base de datos
@@ -97,114 +103,116 @@ const NuevoProducto = () => {
   return (
     <div>
       <Layout>
-        <>
-          <h1 
-            css={css`
-              text-align: center;
-              margin-top: 5rem;
-            `}
-          >Nuevo Producto</h1>
+        {!usuario ? <Error404 /> : (
+          <>
+            <h1 
+              css={css`
+                text-align: center;
+                margin-top: 5rem;
+              `}
+            >Nuevo Producto</h1>
 
-          <Formulario
-            onSubmit={handleSubmit}
-            noValidate
-          >
-            <fieldset>
-              <legend>Información General</legend>
+            <Formulario
+              onSubmit={handleSubmit}
+              noValidate
+            >
+              <fieldset>
+                <legend>Información General</legend>
 
-              <Campo>
-                <label htmlFor='nombre'>Nombre</label>
-                <input 
-                  type='text'
-                  id='nombre'
-                  placeholder='Nombre del Producto'
-                  name='nombre'
-                  value={nombre}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
+                <Campo>
+                  <label htmlFor='nombre'>Nombre</label>
+                  <input 
+                    type='text'
+                    id='nombre'
+                    placeholder='Nombre del Producto'
+                    name='nombre'
+                    value={nombre}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </Campo>
+
+                {/*Errores de validación de campo*/}
+                {errores.nombre && <Error>{errores.nombre}</Error>}
+
+                <Campo>
+                  <label htmlFor='empresa'>Empresa</label>
+                  <input 
+                    type='text'
+                    id='empresa'
+                    placeholder='Nombre de la Empresa o Compañía'
+                    name='empresa'
+                    value={empresa}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </Campo>
+
+                {/*Errores de validación de campo*/}
+                {errores.empresa && <Error>{errores.empresa}</Error>}
+
+                <Campo>
+                  <label htmlFor='imagen'>Imagen</label>
+                  <FileUploader
+                    accept='image/*'
+                    id='imagen'
+                    name='imagen'
+                    randomizeFilename
+                    storageRef={firebase.storage.ref('productos')}
+                    onUploadStart={handleUploadStart}
+                    onUploadError={handleUploadError}
+                    onUploadSuccess={handleUploadSuccess}
+                    onProgress={handleProgress}
+                  />
+                </Campo>
+
+                <Campo>
+                  <label htmlFor='url'>URL</label>
+                  <input 
+                    type='url'
+                    id='url'
+                    name='url'
+                    placeholder='URL de tu producto'
+                    value={url}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </Campo>
+
+                {/*Errores de validación de campo*/}
+                {errores.url && <Error>{errores.url}</Error>}
+
+              </fieldset>
+
+              <fieldset>
+                <legend>Sobre tu Producto</legend>
+
+                <Campo>
+                  <label htmlFor='descripcion'>Descripción</label>
+                  <textarea 
+                    id='descripcion'
+                    name='descripcion'
+                    value={descripcion}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </Campo>
+
+                {/*Errores de validación de campo*/}
+                {errores.descripcion && <Error>{errores.descripcion}</Error>}
+
+              </fieldset>
+    
+              {/*Errores de registro: respuesta por parte del servidor de firebase*/}
+              {error && <Error>{error}</Error>}
+    
+              <InputSubmit 
+                type='submit' 
+                value='Crear Producto'
                 />
-              </Campo>
-
-              {/*Errores de validación de campo*/}
-              {errores.nombre && <Error>{errores.nombre}</Error>}
-
-              <Campo>
-                <label htmlFor='empresa'>Empresa</label>
-                <input 
-                  type='text'
-                  id='empresa'
-                  placeholder='Nombre de la Empresa o Compañía'
-                  name='empresa'
-                  value={empresa}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Campo>
-
-              {/*Errores de validación de campo*/}
-              {errores.empresa && <Error>{errores.empresa}</Error>}
-
-              <Campo>
-                <label htmlFor='imagen'>Imagen</label>
-                <FileUploader
-                  accept='image/*'
-                  id='imagen'
-                  name='imagen'
-                  randomizeFilename
-                  storageRef={firebase.storage.ref('productos')}
-                  onUploadStart={handleUploadStart}
-                  onUploadError={handleUploadError}
-                  onUploadSuccess={handleUploadSuccess}
-                  onProgress={handleProgress}
-                />
-              </Campo>
-
-              <Campo>
-                <label htmlFor='url'>URL</label>
-                <input 
-                  type='url'
-                  id='url'
-                  name='url'
-                  placeholder='URL de tu producto'
-                  value={url}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Campo>
-
-              {/*Errores de validación de campo*/}
-              {errores.url && <Error>{errores.url}</Error>}
-
-            </fieldset>
-
-            <fieldset>
-              <legend>Sobre tu Producto</legend>
-
-              <Campo>
-                <label htmlFor='descripcion'>Descripción</label>
-                <textarea 
-                  id='descripcion'
-                  name='descripcion'
-                  value={descripcion}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                />
-              </Campo>
-
-              {/*Errores de validación de campo*/}
-              {errores.descripcion && <Error>{errores.descripcion}</Error>}
-
-            </fieldset>
-  
-            {/*Errores de registro: respuesta por parte del servidor de firebase*/}
-            {error && <Error>{error}</Error>}
-  
-            <InputSubmit 
-              type='submit' 
-              value='Crear Producto'
-              />
-          </Formulario>
-        </>
+            </Formulario>
+          </>
+        )}
       </Layout>
     </div>
   )
